@@ -27,24 +27,23 @@ all:
 
 # misc rules
 git-version :
-	git rev-parse HEAD > org/mueller_physics/ir_tracking/git-version.txt  ; \
-	git tag --contains >> org/mueller_physics/ir_tracking/git-version.txt ; \
-	echo "n/a" >> org/mueller_physics/ir_tracking/git-version.txt
+	git rev-parse HEAD > org/mueller_physics/git-version.txt  ; \
+	git tag --contains >> org/mueller_physics/git-version.txt ; \
+	echo "n/a" >> org/mueller_physics/git-version.txt
 	 	
 
 
 jar: git-version
-	$(JAR) -cfm irTracking_plugin_$(shell head -c 10 org/fairsim/git-version.txt).jar \
+	$(JAR) -cfm irTracking_plugin_$(shell head -c 10 org/mueller_physics/git-version.txt).jar \
 	Manifest.txt \
 	org/mueller_physics/*/*.class \
-	org/mueller_physics/ir_tracking/git-version.txt \
-	org/mueller_physics/ir_tracking/resources/* \
+	org/mueller_physics/git-version.txt \
+	org/mueller_physics/resources/* \
 
 
-clean : clean-jtransforms
-	$(RM) fairSIM_*.jar fairSIM_*.tar.bz2
-	$(RM) org/fairsim/*/*.class org/fairsim/git-version.txt
-	$(RM) org/fairsim/extern/*/*.class
+clean : 
+	$(RM) irTracking_plugin_*.tar.bz2
+	$(RM) org/mueller_physics/*/*.class org/mueller_physics/git-version.txt
 	$(RM) -r doc/*
 	$(RM) -r target
 
