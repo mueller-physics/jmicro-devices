@@ -17,10 +17,10 @@ along with ir-track.  If not, see <http://www.gnu.org/licenses/>
 
 package org.mueller_physics.camera_connect;
 
+import org.fairsim.sim_gui.PlainImageDisplay;
+import javax.swing.JFrame;
 
 public class CameraConnect_IDS {
-
-    
 
     // initialize the static library...
     static {
@@ -35,22 +35,44 @@ public class CameraConnect_IDS {
 
 
     // the camera id this instance is connected to
-    private int camhd=-1;
+    private final int camhd;
+    private boolean cameraConnected = true;
+    private CameraConnect_IDS(int c) {
+	camhd=c;	
+    };
 
-    public CameraConnect_IDS() {};
+    protected void finalize() throws Throwable {
+	if (cameraConnected) {
+	    idsj_ExitCamera(camhd);
+	}
+	super.finalize();
+    }
 
     /** connect to camera #n **/
-    public void connect(int id) {
+    public static CameraConnect_IDS connect(int id) {
 	idsj_InitCamera(id);
-	camhd=id;
+	return new CameraConnect_IDS(id);
     }
 
-    /** connect from camera */
+    /** disconnect from camera */
     public void disconnect() {
-	if (camhd<0) return;
 	idsj_ExitCamera(camhd);
-	camhd=-1;
+	cameraConnected=false;
     }
+
+
+    public double [] setExposureTime( double expTimeMS ) {
+	double [] ret = new double[2];
+
+	ret[1] = idsj_FrameRateSet( camhd, (1000/expTimeMS) );
+	ret[0] = idsj_ExposureTimeSet( camhd, expTimeMS);
+
+	return ret;
+    }
+    
+
+
+
 
 
 
@@ -68,11 +90,6 @@ public class CameraConnect_IDS {
      *	@param camera_id */
     private static native int idsj_InitCamera(int hCam);
     
-    /** Allocates image memory.
-     *  calls 'is_AllocImageMemory'.
-     *  @return A long[] with 'ppcImgMem' and 'pid' */
-    private static native long[] idsj_AllocImageMem(int hCam, int w, int h, int bpp);
-
     /** Exits an IDS camera based on ID.
      *  calls 'ids_ExitCamera(camId)' */
     private static native void idsj_ExitCamera(int hCam);
@@ -83,7 +100,7 @@ public class CameraConnect_IDS {
      *  These will currently return an empty list of size 0. */
     private static native int[] idsj_PixelClockGetList(int hCam);
     
-    /** Set a new camera framerate-
+    /** Set a new camera framerate.
      * calls 'is_SetFrameRate()'.
      * @return the new framerate */
     private static native double idsj_FrameRateSet(int hCam, double fps);
@@ -91,6 +108,37 @@ public class CameraConnect_IDS {
     /** Query the cameras currently set frame rate */
     private static native double idsj_FrameRateQuery(int hCam);
 
+    /** Set the cameras exposure time */
+    private static native double idsj_ExposureTimeSet( int hCam, double time);
+    
+    /** Query the cameras exposure time */
+    private static native double idsj_ExposureTimeQuery( int hCam);
+
+    /** Get the camera's ROI.
+     *  Calls into 'is_AOI', only performs a 'GET'
+     * */
+    private static native int [] idsj_ROIQuery(int hCam);
+
+    /** Set the camera's ROI.
+     *	Calls into 'is_AOI', performs various size + bound checks.
+     * */
+    private static native int [] idsj_ROISet(int hCam, int x, int y, int w, int h, boolean dbg);
+
+
+    /** Allocates image memory.
+     *  calls 'is_AllocImageMemory'.
+     *  @return A long[] with 'ppcImgMem' and 'pid' */
+    private static native long[] idsj_AllocImageMem(int hCam, int w, int h, int bpp);
+
+    /** Set image memory active.
+     * calls 'is_SetImageMem' */
+    private static native void idsj_SetImageMem(int hCam, long pcImgMem, long id);
+    
+
+    /** Blocking image acquisition.
+     *  calls 'is_freezeVideo' and returns result into the provided array
+     * */
+    private static native void idsj_FreezeVideoBlocking(int hCam, short [] data, long cmem, int size );
 
     // --- test the class ---
     public static void main(String [] args) {
@@ -106,7 +154,7 @@ public class CameraConnect_IDS {
 
 	// run low level (static jni calls) functions
 	int id=1;			// camera id to use
-	int rx=16,ry=32,rw=640,rh=480;	// parameters for ROI setting
+	int rx=17,ry=41,rw=643,rh=481;	// parameters for ROI setting
 	
 	
 	System.out.println("--- API level functions ----");
@@ -126,14 +174,65 @@ public class CameraConnect_IDS {
 	fps = idsj_FrameRateSet(id,10.);
 	System.out.println("Frame rate set 10 fps, now: "+fps);
 
+	double exp = idsj_ExposureTimeQuery(id);
+	System.out.println("Exposure time: "+exp);
+
+	exp = idsj_ExposureTimeSet(id, 2.);
+	System.out.println("Exposure time set to 2ms, not: "+exp);
+
+
+	int [] roi;
+	roi = idsj_ROIQuery(id);
+	System.out.println("get ROI, cur x: "+roi[0]+" y:  "+roi[1]+" w: "+roi[2]+" h: "+roi[3]);
+	roi = idsj_ROISet(id, rx,ry,rw,rh, true);
+	System.out.println("set ROI, new x: "+roi[0]+" y:  "+roi[1]+" w: "+roi[2]+" h: "+roi[3]);
+
 
 	long [] res = idsj_AllocImageMem(id, rw, rh, 16);
 	System.out.println("allocated memory: pid: "+res[1]+" loc: "+res[0]);
+	
+	idsj_SetImageMem( id, res[0], res[1]);
+	System.out.println("memory "+res[1]+" set as active");
+
+	short [] pxl = new short[ roi[2]*roi[3] ];
+
+        // create a frame and add the display
+	PlainImageDisplay dspl = new PlainImageDisplay(1,roi[2],roi[3],"IDS_Camera");
+        JFrame mainFrame = new JFrame("Plain Image Receiver");
+        mainFrame.add( dspl.getPanel() ); 
+        
+        mainFrame.pack();
+        mainFrame.setLocation( 100, 100 );
+        mainFrame.setVisible(true);
+
+	for (int i=0; i<200; i++) {
+	    long t1 = System.nanoTime();
+	    idsj_FreezeVideoBlocking( id, pxl, res[0], roi[2]*roi[3]*2 );
+	    long t2 = System.nanoTime();
+	    System.out.println("Snapped image "+i+": "+(t2-t1)/1000000+"ms");
+	    dspl.newImage(0, pxl);	
+	
+	}
+
 
 	idsj_ExitCamera(id);
 	System.out.println("disconnected");
 	
+	try { Thread.sleep(1); } catch (Exception e) {};
 
+	System.out.println("---- JAVA / class level functions ----");
+
+	CameraConnect_IDS cc = CameraConnect_IDS.connect(id);
+	System.out.println("-> connected");
+
+	double [] expTime = cc.setExposureTime(5.);
+	System.out.println("Exposure time set to 5ms, now "+expTime[0]+" fps "+expTime[1]);
+
+
+
+
+	cc.disconnect();
+	System.out.println("-> disconnected, done");
 
     }
 

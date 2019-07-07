@@ -19,10 +19,15 @@ JFLAGS+= -target 1.6 -source 1.6 -bootclasspath ./external/rt-1.6.jar
 # remove command to clean up
 RM = rm -vf
 
-.PHONY:	all org/mueller_physics/ir_tracking/git-version.txt
+.PHONY:	all org/mueller_physics/ir_tracking/git-version.txt bridge
 
-all:	
+
+
+all:	bridge	
 	$(JC) $(JFLAGS) org/mueller_physics/*/*.java
+
+bridge:
+	make -C bridgelibs
 
 
 # misc rules

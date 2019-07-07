@@ -14,8 +14,12 @@ CFLAGS= -O2 $(JNIFLAG)
 
 
 # general .c --> .so rule
-%.so:%.c
-	$(CC) -fPIC -shared -o $@ $< $(CFLAGS) -lueye_api 
+%.o:%.c
+	$(CC) -c -fPIC -o $@ $< $(CFLAGS) 
+
+# clean
+clean:
+	$(RM) *.so *.o org_mueller_physics_*.h
 
 
 # IDS header files
@@ -23,10 +27,11 @@ org_mueller_physics_camera_connect_CameraConnect_IDS.h: ../org/mueller_physics/c
 	javah -cp ../ org.mueller_physics.camera_connect.CameraConnect_IDS
 	touch $@
 
+# IDS object
+cam_connect_ids.o: org_mueller_physics_camera_connect_CameraConnect_IDS.h
+
 # IDS connector library
-cam_connect_ids.so: org_mueller_physics_camera_connect_CameraConnect_IDS.h
+cam_connect_ids.so: cam_connect_ids.o jni_helpers.o
+	$(CC) -fPIC -shared -o $@ $^ $(CFLAGS) -lueye_api 
 
 
-# clean
-clean:
-	$(RM) *.so org_mueller_physics_*.h
