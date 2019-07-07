@@ -21,6 +21,7 @@ CFLAGS= -O2 $(JNIFLAG)
 # IDS header files
 org_mueller_physics_camera_connect_CameraConnect_IDS.h: ../org/mueller_physics/camera_connect/CameraConnect_IDS.java
 	javah -cp ../ org.mueller_physics.camera_connect.CameraConnect_IDS
+	touch $@
 
 # IDS connector library
 cam_connect_ids.so: org_mueller_physics_camera_connect_CameraConnect_IDS.h
