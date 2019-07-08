@@ -41,6 +41,7 @@ public class CameraConnect_IDS {
     private CameraConnect_IDS(int c) {
 	camhd = idsj_InitCamera(c);
 	//System.out.println("camhd: "+camhd+" c "+c);
+	idsj_SetColorMode(camhd);
 	currentROI = idsj_ROIQuery(camhd);
     };
 
@@ -143,7 +144,11 @@ public class CameraConnect_IDS {
      *  calls is_PixelClock(). TODO: Handle cameras with continuous pixel clock settings. 
      *  These will currently return an empty list of size 0. */
     private static native int[] idsj_PixelClockGetList(int hCam);
-    
+
+    /** Set the bit depth.
+     *  Currently fixed to 16bit mono */
+    private static native void idsj_SetColorMode(int camhd);
+
     /** Set a new camera framerate.
      * calls 'is_SetFrameRate()'.
      * @return the new framerate */
@@ -209,11 +214,14 @@ public class CameraConnect_IDS {
 	idsj_InitCamera(id);
 	System.out.println("connected to camera: "+id);
 
-
 	int [] pxlClocks = idsj_PixelClockGetList(id);
 	for (int i=0; i<pxlClocks.length; i++) {
 	    System.out.println("pixel clock option ["+i+"]: "+pxlClocks[i]);
 	}
+
+	idsj_SetColorMode(id);
+	System.out.println("set color mode to 16 bit mono");
+
 
 	double fps = idsj_FrameRateQuery(id);
 	System.out.println("current fps: "+fps);

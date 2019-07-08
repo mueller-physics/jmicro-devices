@@ -74,6 +74,15 @@ JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConn
 
 }
 
+// set color mode / bit depth
+JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1SetColorMode
+  (JNIEnv *env, jclass c, jint  camhd) {
+
+    errcheck( env, camhd, is_SetColorMode( camhd, IS_CM_MONO16));
+
+}
+
+
 // set framerate
 JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1FrameRateSet
   (JNIEnv *env, jclass c, jint camhd, jdouble fps) {
@@ -194,7 +203,7 @@ JNIEXPORT jlongArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraCon
 
     // TODO: this is needed to avoid hitting a 'double free' 
     // see tests/ids-test.c
-    errcheck( env, camhd, is_AllocImageMem( camhd, width+4, height+4, bpp, &loc, &pid)); 
+    errcheck( env, camhd, is_AllocImageMem( camhd, width, height, bpp, &loc, &pid)); 
 
     jlong ret[2] = { (long)loc, pid };
 
