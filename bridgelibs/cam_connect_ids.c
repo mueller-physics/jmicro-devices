@@ -45,7 +45,7 @@ JNIEXPORT jint JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
   (JNIEnv *env, jclass c, jint camhd ) {
     
     errcheck( env, camhd, is_InitCamera( &camhd, NULL));
-    return 0;
+    return camhd;
 }
 
 
@@ -192,7 +192,9 @@ JNIEXPORT jlongArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraCon
     
     char * loc; int pid;
 
-    errcheck( env, camhd, is_AllocImageMem( camhd, width, height, bpp, &loc, &pid)); 
+    // TODO: this is needed to avoid hitting a 'double free' 
+    // see tests/ids-test.c
+    errcheck( env, camhd, is_AllocImageMem( camhd, width+4, height+4, bpp, &loc, &pid)); 
 
     jlong ret[2] = { (long)loc, pid };
 
@@ -208,6 +210,13 @@ JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
 
   }
 
+JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1FreeImageMem
+  (JNIEnv *env, jclass c, jint camhd, jlong loc, jlong pod) {
+
+    errcheck(env, camhd, is_FreeImageMem( camhd, (char*)loc, (int)pod));
+
+  }
+
 
 // ---- Image acquisition ----
 
@@ -219,8 +228,6 @@ JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
     short * pxl = (*env)->GetPrimitiveArrayCritical(env, data, 0);
     memcpy( pxl, (void*)cmem, size);
     (*env)->ReleasePrimitiveArrayCritical(env,data,pxl,0);
-
-
 }
 
 

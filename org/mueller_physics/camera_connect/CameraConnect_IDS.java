@@ -17,9 +17,6 @@ along with ir-track.  If not, see <http://www.gnu.org/licenses/>
 
 package org.mueller_physics.camera_connect;
 
-import org.fairsim.sim_gui.PlainImageDisplay;
-import javax.swing.JFrame;
-
 public class CameraConnect_IDS {
 
     // initialize the static library...
@@ -36,9 +33,15 @@ public class CameraConnect_IDS {
 
     // the camera id this instance is connected to
     private final int camhd;
+    private int [] currentROI = new int[4];
+    private long [] currentImageMemory = new long [] {0,0};
+
     private boolean cameraConnected = true;
+
     private CameraConnect_IDS(int c) {
-	camhd=c;	
+	camhd = idsj_InitCamera(c);
+	//System.out.println("camhd: "+camhd+" c "+c);
+	currentROI = idsj_ROIQuery(camhd);
     };
 
     protected void finalize() throws Throwable {
@@ -50,7 +53,6 @@ public class CameraConnect_IDS {
 
     /** connect to camera #n **/
     public static CameraConnect_IDS connect(int id) {
-	idsj_InitCamera(id);
 	return new CameraConnect_IDS(id);
     }
 
@@ -70,13 +72,55 @@ public class CameraConnect_IDS {
 	return ret;
     }
     
+    
+    public int [] setROI(int ... roi) {
+
+	// dealloc
+	if ( currentImageMemory[0] != 0 ) {
+	    //System.out.println("!!! free");
+	    idsj_FreeImageMem( camhd, currentImageMemory[0], currentImageMemory[1]);
+	}
+
+	if (roi.length != 2 && roi.length != 4) {
+	    throw new RuntimeException("wrong argument count");
+	}
+
+	if (roi.length ==2 ) {
+	    int centerX = currentROI[2]/2 + currentROI[0];
+	    int centerY = currentROI[3]/2 + currentROI[1];
+	    currentROI = 
+		idsj_ROISet( camhd, centerX-roi[0]/2, centerY-roi[1]/2, roi[0], roi[1], false);
+	} else {
+	    currentROI = idsj_ROISet( camhd, roi[0], roi[1], roi[2], roi[3], false);
+	}
 
 
+	currentImageMemory = idsj_AllocImageMem( camhd, currentROI[2], currentROI[3], 16);
+	//System.out.println("--> roi "+currentROI[2]+"x"+currentROI[3]+
+	//"loc "+currentImageMemory[0]+" p: "+currentImageMemory[1]);
+	
+	idsj_SetImageMem( camhd, currentImageMemory[0], currentImageMemory[1]);
+	
+
+	int [] ret = new int[4];
+	for (int i=0;i<4;i++) {
+	    ret[i] = currentROI[i];
+	}
+	return ret;
+    }
 
 
+    public short [] snapImage() {
 
+	//System.out.println("loc: "+currentImageMemory[0]+" p:"+currentImageMemory[1]);
+	//System.out.println("roi: "+currentROI[2]+" "+currentROI[3]);
 
+	short [] ret = new short[currentROI[2]*currentROI[3]];
+	idsj_FreezeVideoBlocking(camhd, ret, currentImageMemory[0], ret.length*2);
 
+	return ret;
+
+    }
     
     // --- JNI native calls ----
 
@@ -134,6 +178,9 @@ public class CameraConnect_IDS {
      * calls 'is_SetImageMem' */
     private static native void idsj_SetImageMem(int hCam, long pcImgMem, long id);
     
+    /** Deallocate image memory */
+    private static native void idsj_FreeImageMem(int hCam, long pcImgMem, long id);
+    
 
     /** Blocking image acquisition.
      *  calls 'is_freezeVideo' and returns result into the provided array
@@ -155,8 +202,8 @@ public class CameraConnect_IDS {
 	// run low level (static jni calls) functions
 	int id=1;			// camera id to use
 	int rx=17,ry=41,rw=643,rh=481;	// parameters for ROI setting
-	
-	
+	int [] roi;
+
 	System.out.println("--- API level functions ----");
 
 	idsj_InitCamera(id);
@@ -181,39 +228,29 @@ public class CameraConnect_IDS {
 	System.out.println("Exposure time set to 2ms, not: "+exp);
 
 
-	int [] roi;
 	roi = idsj_ROIQuery(id);
 	System.out.println("get ROI, cur x: "+roi[0]+" y:  "+roi[1]+" w: "+roi[2]+" h: "+roi[3]);
 	roi = idsj_ROISet(id, rx,ry,rw,rh, true);
 	System.out.println("set ROI, new x: "+roi[0]+" y:  "+roi[1]+" w: "+roi[2]+" h: "+roi[3]);
 
-
-	long [] res = idsj_AllocImageMem(id, rw, rh, 16);
+	long [] res = idsj_AllocImageMem(id, roi[2], roi[3], 16);
 	System.out.println("allocated memory: pid: "+res[1]+" loc: "+res[0]);
 	
 	idsj_SetImageMem( id, res[0], res[1]);
 	System.out.println("memory "+res[1]+" set as active");
-
 	short [] pxl = new short[ roi[2]*roi[3] ];
 
         // create a frame and add the display
-	PlainImageDisplay dspl = new PlainImageDisplay(1,roi[2],roi[3],"IDS_Camera");
-        JFrame mainFrame = new JFrame("Plain Image Receiver");
-        mainFrame.add( dspl.getPanel() ); 
-        
-        mainFrame.pack();
-        mainFrame.setLocation( 100, 100 );
-        mainFrame.setVisible(true);
-
-	for (int i=0; i<200; i++) {
+	for (int i=0; i<10; i++) {
 	    long t1 = System.nanoTime();
 	    idsj_FreezeVideoBlocking( id, pxl, res[0], roi[2]*roi[3]*2 );
 	    long t2 = System.nanoTime();
 	    System.out.println("Snapped image "+i+": "+(t2-t1)/1000000+"ms");
-	    dspl.newImage(0, pxl);	
-	
+	    //dspl.newImage(0, pxl);	
 	}
-
+	
+	//idsj_FreeImageMem( id, res[0], res[1]);
+	System.out.println("free image memory");
 
 	idsj_ExitCamera(id);
 	System.out.println("disconnected");
@@ -225,11 +262,27 @@ public class CameraConnect_IDS {
 	CameraConnect_IDS cc = CameraConnect_IDS.connect(id);
 	System.out.println("-> connected");
 
-	double [] expTime = cc.setExposureTime(5.);
+	double [] expTime = cc.setExposureTime(10.);
 	System.out.println("Exposure time set to 5ms, now "+expTime[0]+" fps "+expTime[1]);
 
-
-
+	//roi = new int [] { 78,91,481,371 };
+	roi = new int [] { 16,40,648,480 };
+	System.out.println("setting ROI to: "+roi[0]+", "+roi[1]+", "+roi[2]+", "+roi[3]);
+	roi = cc.setROI(roi);
+	System.out.println("   new ROI now: "+roi[0]+", "+roi[1]+", "+roi[2]+", "+roi[3]);
+	
+	/*
+	roi = cc.setROI(512,512);
+	System.out.println("512x512 resize: "+roi[0]+", "+roi[1]+", "+roi[2]+", "+roi[3]);
+	*/
+	
+	short [] img =  new short[640*480];
+	for (int i=0;i<10;i++) {
+	    long t1 = System.nanoTime();
+	    img = cc.snapImage();
+	    long t2 = System.nanoTime();
+	    System.out.println("// snap image "+i+" t:"+(t2-t1)/1000000);
+	} 
 
 	cc.disconnect();
 	System.out.println("-> disconnected, done");
