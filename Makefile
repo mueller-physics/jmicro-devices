@@ -11,25 +11,28 @@ JAR = jar
 # Options for the java compiler
 EXTDIR="./external"
 
-JFLAGS = -g -Xlint:unchecked -Xlint:deprecation -extdirs ./external -d ./
-#JFLAGS+= -target 1.6 -source 1.6 -bootclasspath ./external/rt-1.6.jar
+JFLAGS = -g -Xlint:unchecked -Xlint:deprecation -cp ./external/*:./ 
+JFLAGS+= -target 1.6 -source 1.6 -bootclasspath ./external/rt-1.6.jar
 
 
 # remove command to clean up
 RM = rm -vf
 
-.PHONY:	all org/mueller_physics/ir_tracking/git-version.txt bridge java
+.PHONY:	all bridge bridgeheaders org/mueller_physics/ir_tracking/git-version.txt bridge java
 
 
 
-all:	bridge java	
+all:	bridgeheaders java	
+native_all: bridge java 
 
 java:		
-	$(JC) $(JFLAGS) org/mueller_physics/*/*.java
+	$(JC) $(JFLAGS) -d ./ org/mueller_physics/*/*.java
 
+bridgeheaders:
+	make -C bridgelibs headers
+	
 bridge:
-	make -C bridgelibs
-
+	make -C bridgelibs all 
 
 # misc rules
 git-version :

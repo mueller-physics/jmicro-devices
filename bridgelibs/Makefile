@@ -5,6 +5,7 @@
 
 all: cam_connect_ids.so
 
+headers: org_mueller_physics_camera_connect_CameraConnect_IDS.h
 
 # jni location
 JNIFLAG= -I /usr/lib/jvm/java-8-openjdk-amd64/include/ -I /usr/lib/jvm/java-8-openjdk-amd64/include/linux/
@@ -24,7 +25,7 @@ clean:
 
 # IDS header files
 org_mueller_physics_camera_connect_CameraConnect_IDS.h: ../org/mueller_physics/camera_connect/CameraConnect_IDS.java
-	javah -cp ../ org.mueller_physics.camera_connect.CameraConnect_IDS
+	javac -Xlint:deprecation -cp ../ -h ./ $<
 	touch $@
 
 # IDS object
