@@ -12,8 +12,7 @@ JAR = jar
 EXTDIR="./external"
 
 JFLAGS = -g -Xlint:unchecked -Xlint:deprecation -extdirs ./external -d ./
-JFLAGS+= -target 1.6 -source 1.6 -bootclasspath ./external/rt-1.6.jar
-#JFLAGS+= -release 6
+#JFLAGS+= -target 1.6 -source 1.6 -bootclasspath ./external/rt-1.6.jar
 
 
 # remove command to clean up
@@ -48,7 +47,8 @@ jar: git-version
 	org/mueller_physics/resources/* \
 
 
-clean : 
+clean :
+	make -C bridgelibs clean 
 	$(RM) irTracking_plugin_*.tar.bz2
 	$(RM) org/mueller_physics/*/*.class org/mueller_physics/git-version.txt
 	$(RM) -r doc/*
