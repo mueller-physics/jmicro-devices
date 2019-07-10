@@ -60,7 +60,7 @@ endif
 
 all: cam_connect_ids.$(DLL)
 
-headers: org_mueller_physics_camera_connect_CameraConnect_IDS.h
+headers: org_mueller_physics_device_connect_CameraConnect_IDS.h
 
 os-info:
 	@echo $(OS)
@@ -75,12 +75,12 @@ clean:
 
 
 # IDS header files
-org_mueller_physics_camera_connect_CameraConnect_IDS.h: ../org/mueller_physics/camera_connect/CameraConnect_IDS.java
+org_mueller_physics_device_connect_CameraConnect_IDS.h: ../org/mueller_physics/device_connect/CameraConnect_IDS.java
 	javac -Xlint:deprecation -cp ../ -h ./ $<
 	touch $@
 
 # IDS object
-cam_connect_ids.c: org_mueller_physics_camera_connect_CameraConnect_IDS.h
+cam_connect_ids.c: org_mueller_physics_device_connect_CameraConnect_IDS.h
 
 cam_connect_ids.$(OBJ): cam_connect_ids.c
 	$(CCOMP) -c $(OBJFLAG)./$@ $< $(CFLAGS) $(UEYEINC) 

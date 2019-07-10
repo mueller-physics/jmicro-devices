@@ -14,9 +14,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ir-track.  If not, see <http://www.gnu.org/licenses/>
 */
-package org.mueller_physics.camera_gui;
+package org.mueller_physics.device_gui;
 
-import org.mueller_physics.camera_connect.CameraConnect_IDS;
+import org.mueller_physics.device_connect.CameraConnect_IDS;
 import org.fairsim.sim_gui.PlainImageDisplay;
 import org.fairsim.sim_gui.Tiles;
 

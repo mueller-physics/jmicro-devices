@@ -9,7 +9,7 @@
 
 #define _IDS_EXPORT
 #include <ueye.h>
-#include "org_mueller_physics_camera_connect_CameraConnect_IDS.h"
+#include "org_mueller_physics_device_connect_CameraConnect_IDS.h"
 
 // Allow to throw an exception if IDS reports anything but success
 void errcheck( JNIEnv * env, int hCam, int res ){
@@ -19,13 +19,13 @@ void errcheck( JNIEnv * env, int hCam, int res ){
 	is_GetError( hCam, &res, &errMsg);
 
 	// TODO: throw proper custom exception
-	 //(*env)->ThrowNew( env, (*env)->FindClass(env, "org/mueller_physics/camera_connect/ApiError"), errMsg);
+	 //(*env)->ThrowNew( env, (*env)->FindClass(env, "org/mueller_physics/device_connect/ApiError"), errMsg);
 	/*(*env)->CallStaticVoidMethod( env, 
-	    (*env)->FindClass(env,"org/mueller_physics/camera_connect/ApiError"), 
-	 jclass  cls = (*env)->FindClass(env, "org/mueller_physics/camera_connect/ApiError");
+	    (*env)->FindClass(env,"org/mueller_physics/device_connect/ApiError"), 
+	 jclass  cls = (*env)->FindClass(env, "org/mueller_physics/device_connect/ApiError");
 	 jmethod mtd = (*env)->GetStaticMethodID(env, cls, "throwApiError", "(I)V"); */
 
-	 //(*env)->ThrowNew( env, (*env)->FindClass(env, "org/r_physics/camera_connect/CameraConnect_IDS/ApiError"), errMsg);
+	 //(*env)->ThrowNew( env, (*env)->FindClass(env, "org/r_physics/device_connect/CameraConnect_IDS/ApiError"), errMsg);
 	 (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/Exception"), errMsg);
     }
 
