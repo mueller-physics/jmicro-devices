@@ -43,7 +43,7 @@ git-version :
 
 
 jar: git-version
-	$(JAR) -cfm irTracking_plugin_$(shell head -c 10 org/mueller_physics/git-version.txt).jar \
+	$(JAR) -cfm jmicro_devices_$(shell head -c 10 org/mueller_physics/git-version.txt).jar \
 	Manifest.txt \
 	org/mueller_physics/*/*.class \
 	org/mueller_physics/git-version.txt \
@@ -52,7 +52,7 @@ jar: git-version
 
 clean :
 	make -C bridgelibs clean 
-	$(RM) irTracking_plugin_*.tar.bz2
+	$(RM) jmicro_devices_*.tar.bz2
 	$(RM) org/mueller_physics/*/*.class org/mueller_physics/git-version.txt
 	$(RM) -r doc/*
 	$(RM) -r target

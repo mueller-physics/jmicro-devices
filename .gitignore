@@ -5,6 +5,6 @@ doc/
 *.jar
 test*.xml
 *.tar.bz2
-org/fairsim/git-version.txt
+org/mueller_physics/git-version.txt
 target/*
 

@@ -1,0 +1,2 @@
+Manifest-Version: 1.0
+Main-Class: org.mueller_physics.camera_gui.CameraSimpleGUI
