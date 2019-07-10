@@ -45,10 +45,15 @@ else
 
 DLL=so
 OBJ=o
-JNIFLAG= -I /usr/lib/jvm/java-8-openjdk-amd64/include/ -I /usr/lib/jvm/java-8-openjdk-amd64/include/linux/
+JNIFLAGS= -I /usr/lib/jvm/java-8-openjdk-amd64/include/ -I /usr/lib/jvm/java-8-openjdk-amd64/include/linux/
 CFLAGS= -O2 -fPIC -shared $(JNIFLAGS)
 CCOMP=gcc
-OFLAG=-o\ 
+
+OBJFLAG=-o 
+EXEFLAG=-o 
+LINKFLAG=--shared 
+
+UEYEDLL=-lueye_api
 
 endif
 
