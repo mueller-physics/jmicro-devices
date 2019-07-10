@@ -1,4 +1,5 @@
 #include "jni_helpers.h"
+#include <stdlib.h>
 
 // check for null pointer
 void nullcheck( JNIEnv * env, void *p ) {
@@ -16,7 +17,7 @@ jintArray ints_to_jintArray( JNIEnv * env, int n, ...) {
     jintArray res = (*env)->NewIntArray(env, n);
     nullcheck(env, res);
     
-    jint array[n];
+    jint  *array = malloc(n*sizeof(jint));
     nullcheck(env, array);
 
     for (int i=0; i<n; i++) {
@@ -24,7 +25,8 @@ jintArray ints_to_jintArray( JNIEnv * env, int n, ...) {
     }
 
     (*env)->SetIntArrayRegion(env, res, 0, n, array);
-    
+    free(array);
+
     return res;
 
 } 

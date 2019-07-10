@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <jni.h>
+#include <inttypes.h>
 
 #include "jni_helpers.h"
 
+#define _IDS_EXPORT
 #include <ueye.h>
 #include "org_mueller_physics_camera_connect_CameraConnect_IDS.h"
 
@@ -64,13 +66,16 @@ JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
 JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1PixelClockGetList
   (JNIEnv *env, jclass c, jint camhd ) {
 
-    int nrPxlClk;
+    uint32_t nrPxlClk;
     errcheck( env, camhd, is_PixelClock(camhd, IS_PIXELCLOCK_CMD_GET_NUMBER, &nrPxlClk, sizeof(nrPxlClk)));
 
-    int pxlClocks[nrPxlClk];
-    errcheck( env, camhd, is_PixelClock(camhd, IS_PIXELCLOCK_CMD_GET_LIST, &pxlClocks, sizeof(UINT)*nrPxlClk));
+    uint32_t * pxlClocks = malloc(nrPxlClk*sizeof(uint32_t));
+    errcheck( env, camhd, is_PixelClock(camhd, IS_PIXELCLOCK_CMD_GET_LIST, pxlClocks, sizeof(int)*nrPxlClk));
+ 
+    jintArray res = intp_to_jintArray(env, nrPxlClk, pxlClocks);
 
-    return intp_to_jintArray( env, nrPxlClk, pxlClocks);
+    free( pxlClocks );
+    return res;
 
 }
 
@@ -201,11 +206,11 @@ JNIEXPORT jlongArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraCon
     
     char * loc; int pid;
 
-    // TODO: this is needed to avoid hitting a 'double free' 
-    // see tests/ids-test.c
     errcheck( env, camhd, is_AllocImageMem( camhd, width, height, bpp, &loc, &pid)); 
 
-    jlong ret[2] = { (long)loc, pid };
+    jlong ret[2] = { (jlong)loc, pid };
+
+    //printf("--> imgMem %zd, %d\n",loc,pid);
 
     (*env)->SetLongArrayRegion(env, res, 0, 2, ret);
     return res;

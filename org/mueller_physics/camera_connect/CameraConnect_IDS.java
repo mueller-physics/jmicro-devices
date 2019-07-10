@@ -23,7 +23,11 @@ public class CameraConnect_IDS {
     static {
 	try {
 	   // TODO: read this from some config
-	   System.load(System.getProperty("user.dir")+"/bridgelibs/cam_connect_ids.so");
+	   if (System.getProperty("os.name").startsWith("Windows")) {
+	   	System.load(System.getProperty("user.dir")+"\\bridgelibs\\cam_connect_ids.dll");
+	   } else {
+		System.load(System.getProperty("user.dir")+"/bridgelibs/cam_connect_ids.so");
+	   }
 	} catch (UnsatisfiedLinkError e) {
 	    System.err.println("Native code library failed to load.\n" + e);
 	    System.exit(1);
@@ -214,10 +218,11 @@ public class CameraConnect_IDS {
 	idsj_InitCamera(id);
 	System.out.println("connected to camera: "+id);
 
+	
 	int [] pxlClocks = idsj_PixelClockGetList(id);
 	for (int i=0; i<pxlClocks.length; i++) {
 	    System.out.println("pixel clock option ["+i+"]: "+pxlClocks[i]);
-	}
+	} 
 
 	idsj_SetColorMode(id);
 	System.out.println("set color mode to 16 bit mono");

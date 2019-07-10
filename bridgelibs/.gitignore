@@ -2,3 +2,8 @@ org_mueller_physics_*.h
 
 *.so
 *.o
+
+*.dll
+*.exp
+*.lib
+*.obj
