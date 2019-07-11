@@ -32,7 +32,7 @@ void errcheck( JNIEnv * env, int hCam, int res ){
 }
 
 // query number of cameras
-JNIEXPORT jint JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1GetNumberOfCameras
+JNIEXPORT jint JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1GetNumberOfCameras
   (JNIEnv *env, jclass c) {
 
     int res, nrCams;
@@ -43,7 +43,7 @@ JNIEXPORT jint JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
 
 
 // initialize camera
-JNIEXPORT jint JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1InitCamera
+JNIEXPORT jint JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1InitCamera
   (JNIEnv *env, jclass c, jint camhd ) {
     
     errcheck( env, camhd, is_InitCamera( &camhd, NULL));
@@ -52,7 +52,7 @@ JNIEXPORT jint JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
 
 
 // release the camera
-JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1ExitCamera
+JNIEXPORT void JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1ExitCamera
   (JNIEnv *env, jclass c, jint  camhd) {
 
     errcheck( env, camhd, is_ExitCamera( camhd ));
@@ -63,7 +63,7 @@ JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
 // ---- Pixel clocks, exposure times, ROI, etc. ----
 
 // return list of avail. pixel clocks
-JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1PixelClockGetList
+JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1PixelClockGetList
   (JNIEnv *env, jclass c, jint camhd ) {
 
     uint32_t nrPxlClk;
@@ -80,7 +80,7 @@ JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConn
 }
 
 // set color mode / bit depth
-JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1SetColorMode
+JNIEXPORT void JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1SetColorMode
   (JNIEnv *env, jclass c, jint  camhd) {
 
     errcheck( env, camhd, is_SetColorMode( camhd, IS_CM_MONO16));
@@ -89,7 +89,7 @@ JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
 
 
 // set framerate
-JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1FrameRateSet
+JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1FrameRateSet
   (JNIEnv *env, jclass c, jint camhd, jdouble fps) {
     double newfps;
     errcheck(env, camhd, is_SetFrameRate(camhd, fps, &newfps));
@@ -97,7 +97,7 @@ JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnec
 }
 
 // query framerate
-JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1FrameRateQuery
+JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1FrameRateQuery
   (JNIEnv *env, jclass c, jint camhd) {
     double newfps;
     errcheck(env, camhd, is_SetFrameRate(camhd, IS_GET_FRAMERATE, &newfps));
@@ -106,7 +106,7 @@ JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnec
 
 
 // set exposure time
-JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1ExposureTimeSet
+JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1ExposureTimeSet
   (JNIEnv *env, jclass c, jint camhd, jdouble exp) {
 
     errcheck( env, camhd, is_Exposure(camhd, IS_EXPOSURE_CMD_SET_EXPOSURE, &exp, 8));
@@ -116,7 +116,7 @@ JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnec
 
 
 // query exposure time
-JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1ExposureTimeQuery
+JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1ExposureTimeQuery
   (JNIEnv *env, jclass c, jint camhd) {
 
     double exp;
@@ -127,7 +127,7 @@ JNIEXPORT jdouble JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnec
 
 
 // query ROI
-JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1ROIQuery
+JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1ROIQuery
   (JNIEnv *env, jclass c,  jint camhd ) {
 
     IS_RECT roi;
@@ -137,7 +137,7 @@ JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConn
 }
 
 // set ROI
-JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1ROISet
+JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1ROISet
   (JNIEnv *env, jclass c, jint camhd, jint input_x, jint input_y, jint input_width, jint input_height, jboolean prnt_dbg) {
 
 
@@ -198,7 +198,7 @@ JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConn
 
 // allocate image memory. 
 // returns pointers and id as a java array
-JNIEXPORT jlongArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1AllocImageMem
+JNIEXPORT jlongArray JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1AllocImageMem
   (JNIEnv *env, jclass c, jint camhd, jint width, jint height, jint bpp) {
    
     jlongArray res = (*env)->NewLongArray(env, 2);
@@ -217,14 +217,14 @@ JNIEXPORT jlongArray JNICALL Java_org_mueller_1physics_camera_1connect_CameraCon
 
 }
 
-JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1SetImageMem
+JNIEXPORT void JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1SetImageMem
   (JNIEnv *env, jclass c, jint camhd, jlong loc, jlong pod) {
 
     errcheck(env, camhd, is_SetImageMem( camhd, (char*)loc, (int)pod));
 
   }
 
-JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1FreeImageMem
+JNIEXPORT void JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1FreeImageMem
   (JNIEnv *env, jclass c, jint camhd, jlong loc, jlong pod) {
 
     errcheck(env, camhd, is_FreeImageMem( camhd, (char*)loc, (int)pod));
@@ -234,7 +234,7 @@ JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1
 
 // ---- Image acquisition ----
 
-JNIEXPORT void JNICALL Java_org_mueller_1physics_camera_1connect_CameraConnect_1IDS_idsj_1FreezeVideoBlocking
+JNIEXPORT void JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1FreezeVideoBlocking
   (JNIEnv *env, jclass c, jint camhd, jshortArray data, jlong cmem, jint size ) {
 
     errcheck(env, camhd, is_FreezeVideo(camhd, IS_WAIT));
