@@ -38,7 +38,7 @@ public class CameraSimpleGUI {
     final CameraConnect_IDS cam;
     PlainImageDisplay dspl;
 
-    CameraSimpleGUI( CameraConnect_IDS c ) {
+    public CameraSimpleGUI( CameraConnect_IDS c ) {
 	
 	double initExposure =5.;
 	cam = c;

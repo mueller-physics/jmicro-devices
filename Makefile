@@ -47,12 +47,13 @@ jar: git-version
 	Manifest.txt \
 	org/mueller_physics/*/*.class \
 	org/mueller_physics/git-version.txt \
-	org/mueller_physics/resources/* \
+	org/mueller_physics/resources/.* \
 
 
 clean :
 	make -C bridgelibs clean 
 	$(RM) jmicro_devices_*.tar.bz2
+	$(RM) jmicro_devices_*.jar
 	$(RM) org/mueller_physics/*/*.class org/mueller_physics/git-version.txt
 	$(RM) -r doc/*
 	$(RM) -r target

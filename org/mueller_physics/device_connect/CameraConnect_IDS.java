@@ -19,8 +19,11 @@ package org.mueller_physics.device_connect;
 
 public class CameraConnect_IDS {
 
+    public static final boolean _available;
+
     // initialize the static library...
     static {
+	boolean success =true;
 	try {
 	   // TODO: read this from some config
 	   if (System.getProperty("os.name").startsWith("Windows")) {
@@ -30,8 +33,9 @@ public class CameraConnect_IDS {
 	   }
 	} catch (UnsatisfiedLinkError e) {
 	    System.err.println("Native code library failed to load.\n" + e);
-	    System.exit(1);
+	    success = false;
 	}
+	_available = success;
     }
 
 
