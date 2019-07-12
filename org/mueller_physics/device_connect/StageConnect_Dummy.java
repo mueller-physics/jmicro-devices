@@ -18,55 +18,48 @@ package org.mueller_physics.device_connect;
 
 import org.mueller_physics.devices.JMicroLinearMover;
 
-import org.micromanager.api.ScriptInterface;
-import mmcorej.CMMCore;
 
 
 /** Plugin connecting a stage in MicroManager to jmicro-devices.
  * To MicroManager, this class looks like a plugin (that issues stage move commands).
  * To jmicro-devices, this is a LinearMotion device */
-public class StageConnect_MicroManager 
-    implements JMicroLinearMover { 
+public class StageConnect_Dummy
+    implements JMicroLinearMover {
 
-    private ScriptInterface si = null;
-    private CMMCore mmc = null;
+	private double pos = 0.;
+    
+	int moveSpeed=5;
+	final double min, max;
 
-    private StageConnect_MicroManager( ScriptInterface s ) {
-	si = s;
-	mmc = si.getMMCore();
-    };
-
-    /** Select a stage axis */
-    public  static StageConnect_MicroManager connect( ScriptInterface s ) {
-	return new StageConnect_MicroManager( s );
-    }
-
-    public void moveAbsolute(double pos) {
-	try {
-	    mmc.setPosition(pos);
-	} catch (Exception e) {
-	    si.showError(e, "jmicro-device");	    
+	public StageConnect_Dummy(double min, double max) {
+	    this.min = min;
+	    this.max = max;
 	}
-    }
 
-    public void moveRelative(double pos) {
-	try {
-	    mmc.setRelativePosition(pos);
-	} catch (Exception e) {
-	    si.showError(e, "jmicro-device");	    
+	public void moveRelative(double p) {
+	    pos += p;
+	    if (pos>max) pos = max;
+	    if (pos<min) pos = min;
+	    try {
+                Thread.sleep(moveSpeed);
+	    } catch (Exception e) {
+		
+	    }
 	}
-    }
 
-    public Double getPosition() {
-	try {
-	    return mmc.getPosition();
-	} catch (Exception e) {
-	    si.showError(e, "jmicro-device");
+	public void moveAbsolute(double p) {
+	    if (p>=min && p <=max) {
+		pos=p;
+	    }
+	    try {
+                Thread.sleep(moveSpeed);
+	    } catch (Exception e) {
+		
+	    }
+	}   
+
+	public Double getPosition() {
+	    return pos;
 	}
-	return null;
-    }
 
 }
-
- 
-

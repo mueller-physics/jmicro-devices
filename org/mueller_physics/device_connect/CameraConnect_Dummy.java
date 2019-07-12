@@ -53,6 +53,8 @@ public class CameraConnect_Dummy
 	demoStack=is;
 	sensor_w = is.getWidth();
 	sensor_h = is.getHeight();
+	roiX=roiY=0;
+	roiW=sensor_w; roiH=sensor_h;
 	demoStackAutoInc = true;
     }
     
@@ -71,7 +73,7 @@ public class CameraConnect_Dummy
 	    roiW = r[0];
 	    roiH = r[1];
 	}
-	if (r.length==2) {
+	if (r.length==4) {
 	    roiX = r[0];
 	    roiY = r[1];
 	    roiW = r[2];
@@ -112,7 +114,7 @@ public class CameraConnect_Dummy
 
 	    for (int y=0; y<roiH; y++) {
 		for (int x=0; x<roiW; x++) {
-		    ret[x+sensor_w*y] = (short)ip.getf(x+roiX, y+roiY);
+		    ret[x+roiW*y] = (short)ip.getf(x+roiX, y+roiY);
 		}
 	    }
 	    if (demoStackAutoInc) {
