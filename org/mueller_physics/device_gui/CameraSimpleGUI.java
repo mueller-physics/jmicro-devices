@@ -18,9 +18,13 @@ along with jmicro-devices.  If not, see <http://www.gnu.org/licenses/>
 
 package org.mueller_physics.device_gui;
 
-import org.mueller_physics.device_connect.CameraConnect_IDS;
+import org.mueller_physics.devices.JMicroCamera;
 import org.fairsim.sim_gui.PlainImageDisplay;
 import org.fairsim.sim_gui.Tiles;
+
+import ij.ImageJ;
+import ij.IJ;
+import ij.ImagePlus;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -29,16 +33,17 @@ import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 public class CameraSimpleGUI {
 
 
     JFrame mainFrame = new JFrame("Simple camera GUI");
     JFrame displayFrame;
 
-    final CameraConnect_IDS cam;
+    final JMicroCamera cam;
     PlainImageDisplay dspl;
 
-    public CameraSimpleGUI( CameraConnect_IDS c ) {
+    public CameraSimpleGUI( JMicroCamera c ) {
 	
 	double initExposure =5.;
 	cam = c;
@@ -55,24 +60,24 @@ public class CameraSimpleGUI {
 	mainPanel.add( snapButton);
 
 
-	double [] tmp = cam.setExposureTime(initExposure);
+	double  tmp = cam.setExposureTime(initExposure);
 	final JLabel expLabel = new JLabel();
-	expLabel.setText(String.format("cur exp: %7.1f (%7.2f fps)", tmp[0], tmp[1]));
+	expLabel.setText(String.format("cur exp: %07.1f", tmp));
 
 	Tiles.LNSpinner expSpinner = new Tiles.LNSpinner("exp. time", initExposure, 0.5, 1000, 0.5);
 	expSpinner.addNumberListener( new Tiles.NumberListener() {
 	    @Override 
 	    public void number(double i, Tiles.LNSpinner n) {
-		double [] exp = cam.setExposureTime(i);
-		expLabel.setText(String.format("cur exp: %7.1f (%7.2f fps)", exp[0], exp[1]));
+		double exp = cam.setExposureTime(i);
+		expLabel.setText(String.format("cur exp: %07.1f ", exp));
 	    };
 	});
     
 	mainPanel.add( expLabel);
 	mainPanel.add( expSpinner);
 
-	cam.setROI(32,32,1024,1024);
-	updateDisplay(1024,1024);
+	cam.setROI(0,0,512,512);
+	updateDisplay(512,512);
 
 
 	mainFrame.add( mainPanel);
@@ -99,8 +104,29 @@ public class CameraSimpleGUI {
 
 
     public static void main(String [] arg) {
-	CameraSimpleGUI gui = new CameraSimpleGUI( CameraConnect_IDS.connect(1)); 
-    
+	
+	if (arg.length==0) {
+	    System.out.println("'ids'  - connect to IDS with ID #1");
+	    System.out.println("'dummy' - run the dummy camera with noise");
+	    System.out.println("'tif [tif-file]' - run the dummy camera with TIFF file");
+	    return;
+	}
+	
+	if ( arg[0].equals("ids")) {	
+	    CameraSimpleGUI gui = new CameraSimpleGUI( 
+		org.mueller_physics.device_connect.CameraConnect_IDS.connect(1)); 
+	}
+	if ( arg[0].equals("dummy")) {
+	    CameraSimpleGUI gui = new CameraSimpleGUI( 
+		new org.mueller_physics.device_connect.CameraConnect_Dummy(512,512));
+	}
+	if (arg[0].equals("tiff")) {
+	    new ij.ImageJ( ij.ImageJ.EMBEDDED );
+	    ImagePlus ip = IJ.openImage(arg[1]);
+	    CameraSimpleGUI gui = new CameraSimpleGUI( 
+		new org.mueller_physics.device_connect.CameraConnect_Dummy(ip.getStack()));
+	}
+	    	
     }
 
 

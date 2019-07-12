@@ -11,7 +11,7 @@ JAR = jar
 # Options for the java compiler
 EXTDIR="./external"
 
-JFLAGS = -g -Xlint:unchecked -Xlint:deprecation -cp ./external/*:./ 
+JFLAGS = -g -Xlint:unchecked -Xlint:deprecation -Xlint:-options -cp ./external/*:./ 
 JFLAGS+= -target 1.6 -source 1.6 -bootclasspath ./external/rt-1.6.jar
 
 

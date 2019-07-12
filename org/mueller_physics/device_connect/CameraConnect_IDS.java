@@ -17,7 +17,8 @@ along with jmicro-devices.  If not, see <http://www.gnu.org/licenses/>
 
 package org.mueller_physics.device_connect;
 
-public class CameraConnect_IDS {
+public class CameraConnect_IDS 
+    implements org.mueller_physics.devices.JMicroCamera {
 
     public static final boolean _available;
 
@@ -71,12 +72,12 @@ public class CameraConnect_IDS {
 	cameraConnected=false;
     }
 
+    @Override
+    public double setExposureTime( double expTimeMS ) {
 
-    public double [] setExposureTime( double expTimeMS ) {
-	double [] ret = new double[2];
-
-	ret[1] = idsj_FrameRateSet( camhd, (1000/expTimeMS) );
-	ret[0] = idsj_ExposureTimeSet( camhd, expTimeMS);
+	double ret;
+	idsj_FrameRateSet( camhd, (1000/expTimeMS) );
+	ret = idsj_ExposureTimeSet( camhd, expTimeMS);
 
 	return ret;
     }
@@ -279,8 +280,8 @@ public class CameraConnect_IDS {
 	CameraConnect_IDS cc = CameraConnect_IDS.connect(id);
 	System.out.println("-> connected");
 
-	double [] expTime = cc.setExposureTime(10.);
-	System.out.println("Exposure time set to 5ms, now "+expTime[0]+" fps "+expTime[1]);
+	double expTime = cc.setExposureTime(10.);
+	System.out.println("Exposure time set to 5ms, now "+expTime);
 
 	//roi = new int [] { 78,91,481,371 };
 	roi = new int [] { 16,40,648,480 };
