@@ -66,6 +66,10 @@ public class StageConnect_MicroManager
 	return null;
     }
 
+    public void disconnect() {
+	si = null;
+	mmc = null;
+    }
 }
 
  

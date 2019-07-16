@@ -89,7 +89,10 @@ public class CameraConnect_Dummy
 	roiW=sensor_w; roiH=sensor_h;
 	demoStackAutoInc = true;
     }
-    
+   
+    @Override
+    public void disconnect() {};
+
 
     /** Set the exposure time of the camera */
     @Override
@@ -107,15 +110,13 @@ public class CameraConnect_Dummy
 	    roiH = r[1];
 	}
 	if (r.length==4) {
-	    roiX = r[0];
-	    roiY = r[1];
-	    roiW = r[2];
-	    roiH = r[3];
+	    roiW = r[0];
+	    roiH = r[1];
+	    roiX = r[2];
+	    roiY = r[3];
 	}
 	
-	return new int [] { roiW, roiH };
-
-
+	return new int [] { roiW, roiH, roiX, roiY };
     }
 
 

@@ -17,13 +17,13 @@ along with jmicro-devices.  If not, see <http://www.gnu.org/licenses/>
 
 package org.mueller_physics.devices;
 
-public interface JMicroLinearMover {
+public interface JMicroLinearMover 
+    extends JMicroDevice {
 
     public void moveAbsolute(double pos);
 
     public void moveRelative(double pos);
 
     public Double getPosition();
-
 
 }

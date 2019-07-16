@@ -19,5 +19,7 @@ package org.mueller_physics.devices;
 
 public interface JMicroDevice {
 
+    /** Disconnect from the device */
+    public void disconnect();
 
 }

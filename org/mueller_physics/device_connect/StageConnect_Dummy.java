@@ -62,4 +62,8 @@ public class StageConnect_Dummy
 	    return pos;
 	}
 
+	public void disconnect() {
+
+	}
+
 }

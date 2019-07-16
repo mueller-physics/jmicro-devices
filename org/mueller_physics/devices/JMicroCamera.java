@@ -34,6 +34,7 @@ public interface JMicroCamera extends JMicroDevice {
     /** Set a sensor subsection */
     public int [] setROI(int ... roi);
 
+
 }
 
 
