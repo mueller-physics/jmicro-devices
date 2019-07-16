@@ -76,8 +76,8 @@ public class CameraSimpleGUI {
 	mainPanel.add( expLabel);
 	mainPanel.add( expSpinner);
 
-	cam.setROI(0,0,1024,1024);
-	updateDisplay(1024,1024);
+	int [] roi = cam.setROI(512,512,(1920-512)/2,(1080-512)/2);
+	updateDisplay(roi[0],roi[1]);
 
 
 	mainFrame.add( mainPanel);
