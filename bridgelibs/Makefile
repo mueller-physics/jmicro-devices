@@ -8,6 +8,7 @@ ifeq ($(OS), Windows_NT)
 DLL=dll
 OBJ=obj
 CCOMP=cl
+LINKER=link
 
 # Java JNI includes
 JNIFLAGS=-I /c/Program\ Files/Java/jdk-11.0.2/include/ -I /c/Program\ Files/Java/jdk-11.0.2/include/win32/ 
@@ -24,7 +25,7 @@ CFLAGS+=-I /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/V
 # JNI
 CFLAGS+=$(JNIFLAGS)
 
-LINKFLAG=-LD -link -LIBPATH /c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.18362.0/um/x64/uuid.lib
+LINKFLAG=-DLL -LIBPATH /c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.18362.0/um/x64/uuid.lib
 LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/libcmt.lib
 LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/oldnames.lib
 LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/vcruntime.lib
@@ -34,7 +35,7 @@ LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.18362.0/
 
 # Output flag
 OBJFLAG=-Fo
-EXEFLAG=-Fe
+EXEFLAG=-OUT:
 
 UEYEINC=-I /c/Program\ Files/IDS/uEye/Develop/include/
 UEYEDLL=-LIBPATH /c/Program\ Files/IDS/uEye/Develop/Lib/uEye_api_64.lib
@@ -48,6 +49,7 @@ OBJ=o
 JNIFLAGS= -I /usr/lib/jvm/java-8-openjdk-amd64/include/ -I /usr/lib/jvm/java-8-openjdk-amd64/include/linux/
 CFLAGS= -O2 -fPIC -shared $(JNIFLAGS)
 CCOMP=gcc
+LINKER=gcc
 
 OBJFLAG=-o 
 EXEFLAG=-o 
@@ -87,6 +89,6 @@ cam_connect_ids.$(OBJ): cam_connect_ids.c
 
 # IDS connector library
 cam_connect_ids.$(DLL): cam_connect_ids.$(OBJ) jni_helpers.$(OBJ)
-	$(CCOMP)  $(EXEFLAG)$@ $^ $(LINKFLAG) $(UEYEDLL) 
+	$(LINKER)  $(EXEFLAG)$@ $^ $(LINKFLAG) $(UEYEDLL) 
 
 
