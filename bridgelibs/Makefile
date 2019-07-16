@@ -2,16 +2,38 @@
 
 .PHONY: clean java os-info
 
+
 ifeq ($(OS), Windows_NT)
-# WINDOW SETTINGS
+# --- We're on Windows... ---
+
+# Java JNI includes
+JNIFLAGS=-I /c/Program\ Files/Java/jdk-11.0.2/include/ -I /c/Program\ Files/Java/jdk-11.0.2/include/win32/ 
+
+ifeq ($(MSYSTEM), MINGW64)  
+# --- We're running in MINGW64, so we can statically link w. gcc
+
+DLL=dll
+OBJ=obj
+CFLAGS= -O2 -fPIC -shared $(JNIFLAGS)
+CCOMP=gcc
+LINKER=gcc
+
+OBJFLAG=-o 
+EXEFLAG=-o 
+LINKFLAG=--shared 
+
+UEYEINC=-D _MSC_VER  # this is needed to trick the uEye code on Windows with gcc 
+UEYEINC+=-I /c/Program\ Files/IDS/uEye/Develop/include/
+UEYEDLL+=/c/Program\ Files/IDS/uEye/Develop/Lib/uEye_api_64.lib
+
+
+else
+# --- We're running something, so lets try MSVC ---
 
 DLL=dll
 OBJ=obj
 CCOMP=cl
 LINKER=link
-
-# Java JNI includes
-JNIFLAGS=-I /c/Program\ Files/Java/jdk-11.0.2/include/ -I /c/Program\ Files/Java/jdk-11.0.2/include/win32/ 
 
 # TODO: there has to be a proper way of doing this on windows....
 
@@ -40,9 +62,10 @@ EXEFLAG=-OUT:
 UEYEINC=-I /c/Program\ Files/IDS/uEye/Develop/include/
 UEYEDLL=-LIBPATH /c/Program\ Files/IDS/uEye/Develop/Lib/uEye_api_64.lib
 #UEYEDLL=-LIBPATH /c/Program\ Files/IDS/uEye/Develop/Lib/uEye_api.lib
+endif
 
 else
-# LINUX SETTINGS
+# --- ok, LINUX SETTINGS ---
 
 DLL=so
 OBJ=o

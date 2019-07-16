@@ -38,7 +38,7 @@ jintArray intp_to_jintArray( JNIEnv * env, int n, int *array) {
     jintArray res = (*env)->NewIntArray(env, n);
     nullcheck(env, res);
 
-    (*env)->SetIntArrayRegion(env, res, 0, n, array);
+    (*env)->SetIntArrayRegion(env, res, 0, n, (jint*)array);
     
     return res;
 
