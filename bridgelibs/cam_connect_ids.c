@@ -132,13 +132,13 @@ JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_device_1connect_CameraConn
 
     IS_RECT roi;
     errcheck( env, camhd, is_AOI(camhd, IS_AOI_IMAGE_GET_AOI, &roi, sizeof(roi)));
-    return ints_to_jintArray(env, 4, roi.s32X, roi.s32Y, roi.s32Width, roi.s32Height); 
+    return ints_to_jintArray(env, 4, roi.s32Width, roi.s32Height, roi.s32X, roi.s32Y); 
 
 }
 
 // set ROI
 JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_device_1connect_CameraConnect_1IDS_idsj_1ROISet
-  (JNIEnv *env, jclass c, jint camhd, jint input_x, jint input_y, jint input_width, jint input_height, jboolean prnt_dbg) {
+  (JNIEnv *env, jclass c, jint camhd, jint input_width, jint input_height, jint input_x, jint input_y, jboolean prnt_dbg) {
 
 
     // set the size first (as this determines possible positions)
@@ -190,7 +190,7 @@ JNIEXPORT jintArray JNICALL Java_org_mueller_1physics_device_1connect_CameraConn
 	fflush(stdout);
     }
 
-    return ints_to_jintArray(env, 4, roiPos.s32X, roiPos.s32Y, roiSize.s32Width, roiSize.s32Height); 
+    return ints_to_jintArray(env, 4, roiSize.s32Width, roiSize.s32Height, roiPos.s32X, roiPos.s32Y); 
 
 }
 

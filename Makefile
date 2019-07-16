@@ -46,8 +46,7 @@ jar: git-version
 	$(JAR) -cfm jmicro_devices_$(shell head -c 10 org/mueller_physics/git-version.txt).jar \
 	Manifest.txt \
 	org/mueller_physics/*/*.class \
-	org/mueller_physics/git-version.txt \
-	org/mueller_physics/resources/.* \
+	org/mueller_physics/git-version.txt 
 
 
 clean :

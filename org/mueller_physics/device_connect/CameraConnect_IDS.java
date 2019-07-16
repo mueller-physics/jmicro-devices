@@ -17,6 +17,8 @@ along with jmicro-devices.  If not, see <http://www.gnu.org/licenses/>
 
 package org.mueller_physics.device_connect;
 
+import java.io.File;
+
 public class CameraConnect_IDS 
     implements org.mueller_physics.devices.JMicroCamera {
 
@@ -26,16 +28,37 @@ public class CameraConnect_IDS
     static {
 	boolean success =true;
 	try {
-	   // TODO: read this from some config
-	   if (System.getProperty("os.name").startsWith("Windows")) {
-	   	System.load(System.getProperty("user.dir")+"\\bridgelibs\\cam_connect_ids.dll");
-	   } else {
-		System.load(System.getProperty("user.dir")+"/bridgelibs/cam_connect_ids.so");
-	   }
+	    
+	    String home = System.getProperty("user.dir");
+	    boolean libFound = false;
+
+	    String [] possibleLocations = new String [] {
+		home+"\\bridgelibs\\cam_connect_ids.dll",
+		home+"/bridgelibs/cam_connect_ids.so",
+		home+"\\mmplugins\\cam_connect_ids.dll",
+		home+"/mmplugins/cam_connect_ids.so",
+		home+"\\mmplugins\\jmicro\\cam_connect_ids.dll",
+		home+"/mmplugins/jmicro/cam_connect_ids.so",
+		home+"\\cam_connect_ids.dll",
+		home+"/cam_connect_ids.so",
+		};
+	    
+	    for ( String i : possibleLocations ) {
+		if ( (new File(i)).exists() ) {
+		    System.load(i);
+		    libFound = true;
+		    break;
+		}
+	    }
+
+	    if (!libFound) {
+		throw new RuntimeException("Library dll / so not found!");
+	    }
+
 	} catch (UnsatisfiedLinkError e) {
 	    System.err.println("Native code library failed to load.\n" + e);
 	    success = false;
-	}
+	} 
 	_available = success;
     }
 
@@ -96,16 +119,16 @@ public class CameraConnect_IDS
 	}
 
 	if (roi.length ==2 ) {
-	    int centerX = currentROI[2]/2 + currentROI[0];
-	    int centerY = currentROI[3]/2 + currentROI[1];
+	    int centerX = currentROI[2] + currentROI[0]/2;
+	    int centerY = currentROI[3] + currentROI[1]/2;
 	    currentROI = 
-		idsj_ROISet( camhd, centerX-roi[0]/2, centerY-roi[1]/2, roi[0], roi[1], false);
+		idsj_ROISet( camhd, roi[0], roi[1], centerX-roi[0]/2, centerY-roi[1]/2, false);
 	} else {
 	    currentROI = idsj_ROISet( camhd, roi[0], roi[1], roi[2], roi[3], false);
 	}
 
 
-	currentImageMemory = idsj_AllocImageMem( camhd, currentROI[2], currentROI[3], 16);
+	currentImageMemory = idsj_AllocImageMem( camhd, currentROI[0], currentROI[1], 16);
 	//System.out.println("--> roi "+currentROI[2]+"x"+currentROI[3]+
 	//"loc "+currentImageMemory[0]+" p: "+currentImageMemory[1]);
 	
@@ -125,7 +148,7 @@ public class CameraConnect_IDS
 	//System.out.println("loc: "+currentImageMemory[0]+" p:"+currentImageMemory[1]);
 	//System.out.println("roi: "+currentROI[2]+" "+currentROI[3]);
 
-	short [] ret = new short[currentROI[2]*currentROI[3]];
+	short [] ret = new short[currentROI[0]*currentROI[1]];
 	idsj_FreezeVideoBlocking(camhd, ret, currentImageMemory[0], ret.length*2);
 
 	return ret;
