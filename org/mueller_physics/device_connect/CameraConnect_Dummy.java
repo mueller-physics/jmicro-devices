@@ -88,6 +88,7 @@ public class CameraConnect_Dummy
 	roiX=roiY=0;
 	roiW=sensor_w; roiH=sensor_h;
 	demoStackAutoInc = true;
+	System.out.println("Dummy camera initialized: "+sensor_w+"x"+sensor_h);
     }
    
     @Override
@@ -115,7 +116,17 @@ public class CameraConnect_Dummy
 	    roiX = r[2];
 	    roiY = r[3];
 	}
+
+	if ( roiX+roiW > sensor_w || roiY+roiH > sensor_h ) {
+	    throw new RuntimeException("ROI exceeds sensor size: roi"+
+		roiX+"x"+roiY+"w"+roiW+"h"+roiH+" -- sensor "+sensor_w+"x"+sensor_h);
+	}
 	
+	if ( roiX<0 || roiY<0 || roiW<1 || roiH<1 ) {
+	    throw new RuntimeException("ROI position negative or size empty");
+	}
+
+
 	return new int [] { roiW, roiH, roiX, roiY };
     }
 
