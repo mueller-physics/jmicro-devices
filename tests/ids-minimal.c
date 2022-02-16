@@ -37,11 +37,11 @@ int main() {
 	errcheck( is_AOI( camhd, IS_AOI_IMAGE_GET_AOI, &sensor, sizeof(sensor)));
 	printf("sensor %dx%d+%d+%d", sensor.s32Width, sensor.s32Height, sensor.s32X, sensor.s32Y);
 
-	// alloc 2048x2048, def. bigger than sensor
+	// alloc memory, size given by sensor
 	char * loc; int pid;
 	errcheck( is_AllocImageMem(camhd, sensor.s32Width, sensor.s32Height, 16, &loc, &pid));
 	errcheck( is_SetImageMem(camhd, loc, pid));
-	printf("alloc image mem: %d %ld\n", pid, (long)loc);
+	printf("alloc image mem: %d %lld\n", pid, (long long)loc);
 	
 	// snap some images
 	for (int i=0; i<3; i++) {
