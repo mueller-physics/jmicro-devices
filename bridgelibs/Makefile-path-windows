@@ -1,0 +1,45 @@
+
+
+## --- JAVA JNI  ---
+
+## set java jni include folder (should contain 'jni.h')
+
+## Standard path using OpenJDK
+# JNIPATH=/c/Program\ Files/Java/jdk-11.0.2/include/ -I /c/Program\ Files/Java/jdk-11.0.2/include/win32/ 
+
+## Standard path using Microsoft bundle of OpenJDK 11 (comes with a nice installer)
+## https://docs.microsoft.com/en-gb/java/openjdk/download
+## https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-windows-x64.msi
+
+JNIPATH=/c/Program\ Files/Microsoft/jdk-11.0.14.9-hotspot/include/
+JNIPATH_W32=/c/Program\ Files/Microsoft/jdk-11.0.14.9-hotspot/include/win32
+
+
+## --- uEye ---
+
+## set the path to inlcude IDS uEye files (ueye.h, uEye_api_64.lib, ...)
+
+UEYEINC_PATH=/c/Program\ Files/IDS/uEye/develop/include/
+UEYELIB_PATH=/c/Program\ Files/IDS/uEye/develop/lib/
+
+
+## --- VC build system ---
+
+## Windows Kit
+
+#WKINC_BASE=/c/Program\ Files\ \(x86\)/Windows\ Kits/10/Include/10.0.18362.0/
+WKINC_BASE=/c/Program\ Files\ \(x86\)/Windows\ Kits/10/Include/10.0.19041.0/
+
+#WKLIB_BASE=/c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.18362.0
+WKLIB_BASE=/c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.19041.0
+
+
+## VC includes
+
+VCBIN_PATH=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 14.0/VC/bin/amd64/
+
+#VCINC_BASE=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/include/ 
+VCINC_BASE=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 14.0/VC/include/
+
+#VCLIB_BASE=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/
+VCLIB_BASE=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 14.0/VC/lib/amd64/

@@ -6,15 +6,22 @@
 ifeq ($(OS), Windows_NT)
 # --- We're on Windows... ---
 
-# Java JNI includes
-JNIFLAGS=-I /c/Program\ Files/Java/jdk-11.0.2/include/ -I /c/Program\ Files/Java/jdk-11.0.2/include/win32/ 
+$(info Running on Windows)
+
+# include the windows-specific path settings
+include Makefile-path-windows
+
+JNIFLAGS= -I $(JNIPATH) -I $(JNIPATH_W32) 
+
+
+$(info Build system: $(MSYSTEM) )
 
 ifeq ($(MSYSTEM), MINGW64)  
 # --- We're running in MINGW64, so we can statically link w. gcc
 
 DLL=dll
 OBJ=obj
-CFLAGS= -O2 -fPIC -shared $(JNIFLAGS)
+CFLAGS= -O2 -fPIC -shared $(JNIFLAGS) -D__int64=int64_t
 CCOMP=gcc
 LINKER=gcc
 
@@ -23,45 +30,51 @@ EXEFLAG=-o
 LINKFLAG=--shared 
 
 UEYEINC=-D _MSC_VER  # this is needed to trick the uEye code on Windows with gcc 
-UEYEINC+=-I /c/Program\ Files/IDS/uEye/Develop/include/
-UEYEDLL+=/c/Program\ Files/IDS/uEye/Develop/Lib/uEye_api_64.lib
+UEYEINC+=-I $(UEYEINC_PATH)
+UEYEDLL+=$(UEYELIB_PATH)/uEye_api_64.lib
 
 
 else
 # --- We're running something, so lets try MSVC ---
 
+$(info Build system is not 'MINGW64', so using VC tools)
+
 DLL=dll
 OBJ=obj
-CCOMP=cl
-LINKER=link
+CCOMP=$(VCBIN_PATH)/cl
+LINKER=$(VCBIN_PATH)/link
 
-# TODO: there has to be a proper way of doing this on windows....
+# TODO: there has to be a more proper way of doing this on windows....
 
 # C libs
-CINC_BASE=/c/Program\ Files\ \(x86\)/Windows\ Kits/10/Include/10.0.18362.0/
-CFLAGS=-I $(CINC_BASE)/ucrt/ -I $(CINC_BASE)/um/ -I $(CINC_BASE)/shared/
+CFLAGS=-I $(WKINC_BASE)/ucrt/ -I $(WKINC_BASE)/um/ -I $(WKINC_BASE)/shared/
 
-# Visual studio libs(?)
-CFLAGS+=-I /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/include/  
+# Visual studio libs(?) include
+CFLAGS+=-I $(VCINC_BASE) 
 
 # JNI
 CFLAGS+=$(JNIFLAGS)
 
-LINKFLAG=-DLL -LIBPATH /c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.18362.0/um/x64/uuid.lib
-LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/libcmt.lib
-LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/oldnames.lib
-LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/vcruntime.lib
-LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Community/VC/Tools/MSVC/14.21.27702/lib/x64/libvcruntime.lib
-LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.18362.0/um/x64/kernel32.Lib
-LINKFLAG+=-LIBPATH /c/Program\ Files\ \(x86\)/Windows\ Kits/10/Lib/10.0.18362.0/ucrt/x64/libucrt.lib
+LINKFLAG=-DLL 
+
+# from Windows Kits
+LINKFLAG+=-LIBPATH $(WKLIB_BASE)/um/x64/uuid.lib
+LINKFLAG+=-LIBPATH $(WKLIB_BASE)/um/x64/kernel32.Lib
+LINKFLAG+=-LIBPATH $(WKLIB_BASE)/ucrt/x64/libucrt.lib
+
+# from MSVC
+LINKFLAG+=-LIBPATH $(VCLIB_BASE)/libcmt.lib
+LINKFLAG+=-LIBPATH $(VCLIB_BASE)/oldnames.lib
+LINKFLAG+=-LIBPATH $(VCLIB_BASE)/vcruntime.lib
+LINKFLAG+=-LIBPATH $(VCLIB_BASE)/libvcruntime.lib
+
 
 # Output flag
 OBJFLAG=-Fo
 EXEFLAG=-OUT:
 
-UEYEINC=-I /c/Program\ Files/IDS/uEye/Develop/include/
-UEYEDLL=-LIBPATH /c/Program\ Files/IDS/uEye/Develop/Lib/uEye_api_64.lib
-#UEYEDLL=-LIBPATH /c/Program\ Files/IDS/uEye/Develop/Lib/uEye_api.lib
+UEYEINC=-I $(UEYEINC_PATH)
+UEYEDLL=-LIBPATH $(UEYELIB_PATH)/uEye_api_64.lib
 endif
 
 else
